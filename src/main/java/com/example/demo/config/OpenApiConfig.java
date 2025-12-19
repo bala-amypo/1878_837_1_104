@@ -18,16 +18,13 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Employee Equipment Issuance Policy Checker API")
-                        .version("1.0")
-                        .description("API for managing employee equipment issuance with policy checks"))
+                        .description("API for managing employee equipment issuance with policy compliance checks")
+                        .version("1.0"))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
-                        .addSecuritySchemes(securitySchemeName,
-                                new SecurityScheme()
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")
-                                        .in(SecurityScheme.In.HEADER)
-                                        .name("Authorization")));
+                        .addSecuritySchemes(securitySchemeName, new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")));
     }
 }
