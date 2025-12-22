@@ -1,5 +1,4 @@
-package com.example.demo.serviceimpl;
-
+package com.example.demo.service.serviceimpl;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.DeviceCatalogItem;
