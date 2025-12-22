@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 public class PolicyRuleDto {
+    private Long id;
     private String ruleCode;
     private String description;
     private String appliesToRole;
@@ -8,17 +9,18 @@ public class PolicyRuleDto {
     private Integer maxDevicesAllowed;
     private Boolean active;
 
-    // getters/setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public String getRuleCode() { return ruleCode; }
-    public void setRuleCode(String v) { this.ruleCode = v; }
+    public void setRuleCode(String ruleCode) { this.ruleCode = ruleCode; }
     public String getDescription() { return description; }
-    public void setDescription(String v) { this.description = v; }
+    public void setDescription(String description) { this.description = description; }
     public String getAppliesToRole() { return appliesToRole; }
-    public void setAppliesToRole(String v) { this.appliesToRole = v; }
+    public void setAppliesToRole(String appliesToRole) { this.appliesToRole = appliesToRole; }
     public String getAppliesToDepartment() { return appliesToDepartment; }
-    public void setAppliesToDepartment(String v) { this.appliesToDepartment = v; }
+    public void setAppliesToDepartment(String appliesToDepartment) { this.appliesToDepartment = appliesToDepartment; }
     public Integer getMaxDevicesAllowed() { return maxDevicesAllowed; }
-    public void setMaxAllowedPerEmployee(Integer v) { this.maxDevicesAllowed = v; }
+    public void setMaxDevicesAllowed(Integer maxDevicesAllowed) { this.maxDevicesAllowed = maxDevicesAllowed; }
     public Boolean getActive() { return active; }
-    public void setActive(Boolean v) { this.active = v; }
+    public void setActive(Boolean active) { this.active = active; }
 }

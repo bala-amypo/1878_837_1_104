@@ -4,7 +4,7 @@ public class RegisterRequest {
     private String fullName;
     private String email;
     private String password;
-    private String role; // ADMIN, IT_OPERATOR, AUDITOR
+    private String role;
 
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
