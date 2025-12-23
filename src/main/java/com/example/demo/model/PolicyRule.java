@@ -1,11 +1,8 @@
-// com/example/demo/model/PolicyRule.java
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
 public class PolicyRule {
 
     @Id
@@ -16,25 +13,12 @@ public class PolicyRule {
     private String ruleCode;
 
     private String description;
-
     private String appliesToRole;
-
     private String appliesToDepartment;
-
-    @Column(nullable = false)
     private Integer maxDevicesAllowed;
+    private Boolean active;
 
-    private Boolean active = true;
-
-    public PolicyRule(String ruleCode, String description, String appliesToRole, String appliesToDepartment, Integer maxDevicesAllowed) {
-        this.ruleCode = ruleCode;
-        this.description = description;
-        this.appliesToRole = appliesToRole;
-        this.appliesToDepartment = appliesToDepartment;
-        this.maxDevicesAllowed = maxDevicesAllowed;
-    }
-
-    // Getters and Setters
+   
     public Long getId() {
         return id;
     }
