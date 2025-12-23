@@ -1,21 +1,18 @@
-// com/example/demo/repository/IssuedDeviceRecordRepository.java
 package com.example.demo.repository;
 
 import com.example.demo.model.IssuedDeviceRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface IssuedDeviceRecordRepository extends JpaRepository<IssuedDeviceRecord, Long> {
 
-    @Query("SELECT r FROM IssuedDeviceRecord r WHERE r.employee.id = ?1 AND r.deviceItem.id = ?2 AND r.status = 'ISSUED'")
-    List<IssuedDeviceRecord> findActiveByEmployeeAndDevice(Long employeeId, Long deviceItemId);
+    // Count active devices for a specific employee
+    @Query("SELECT COUNT(r) FROM IssuedDeviceRecord r WHERE r.employeeId = :employeeId AND r.active = true")
+    int countActiveDeviceForEmployee(@Param("employeeId") Long employeeId);
 
-    @Query("SELECT COUNT(r) FROM IssuedDeviceRecord r WHERE r.employee.id = ?1 AND r.status = 'ISSUED'")
-    Long countActiveDevicesForEmployee(Long employeeId);
-
+    // Get all issued devices for an employee
     List<IssuedDeviceRecord> findByEmployeeId(Long employeeId);
-
-    List<IssuedDeviceRecord> findAll();
 }
