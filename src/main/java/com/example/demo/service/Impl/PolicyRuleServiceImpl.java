@@ -1,14 +1,13 @@
-// com/example/demo/service/impl/PolicyRuleServiceImpl.java
 package com.example.demo.service.impl;
 
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.PolicyRule;
 import com.example.demo.repository.PolicyRuleRepository;
 import com.example.demo.service.PolicyRuleService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
+@Service
 public class PolicyRuleServiceImpl implements PolicyRuleService {
 
     private final PolicyRuleRepository repository;
@@ -18,17 +17,21 @@ public class PolicyRuleServiceImpl implements PolicyRuleService {
     }
 
     @Override
-    public PolicyRule createRule(PolicyRule rule) {
-        Optional<PolicyRule> existing = repository.findByRuleCode(rule.getRuleCode());
-        if (existing.isPresent()) {
-            throw new BadRequestException("Rule code");
+    public PolicyRule create(PolicyRule rule) {
+        if (repository.existsByRuleCode(rule.getRuleCode())) {
+            throw new RuntimeException("Rule with code already exists");
         }
         return repository.save(rule);
     }
 
     @Override
-    public List<PolicyRule> getAllRules() {
+    public List<PolicyRule> getAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 
     @Override
