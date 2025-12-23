@@ -1,14 +1,13 @@
-// com/example/demo/service/impl/DeviceCatalogServiceImpl.java
 package com.example.demo.service.impl;
 
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.DeviceCatalogItem;
 import com.example.demo.repository.DeviceCatalogItemRepository;
 import com.example.demo.service.DeviceCatalogService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
+@Service
 public class DeviceCatalogServiceImpl implements DeviceCatalogService {
 
     private final DeviceCatalogItemRepository repository;
@@ -18,27 +17,28 @@ public class DeviceCatalogServiceImpl implements DeviceCatalogService {
     }
 
     @Override
-    public DeviceCatalogItem createItem(DeviceCatalogItem item) {
-        if (item.getMaxAllowedPerEmployee() <= 0) {
-            throw new BadRequestException("maxAllowedPerEmployee");
-        }
-        Optional<DeviceCatalogItem> existing = repository.findByDeviceCode(item.getDeviceCode());
-        if (existing.isPresent()) {
-            throw new BadRequestException("exists");
-        }
+    public DeviceCatalogItem create(DeviceCatalogItem item) {
         return repository.save(item);
     }
 
     @Override
-    public DeviceCatalogItem updateActiveStatus(Long id, boolean active) {
-        DeviceCatalogItem item = repository.findById(id)
-                .orElseThrow(() -> new com.example.demo.exception.ResourceNotFoundException("Device not found"));
-        item.setActive(active);
-        return repository.save(item);
+    public DeviceCatalogItem getById(Long id) {
+        return repository.findById(id).orElse(null);
     }
 
     @Override
-    public List<DeviceCatalogItem> getAllItems() {
+    public List<DeviceCatalogItem> getAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public DeviceCatalogItem update(Long id, DeviceCatalogItem item) {
+        item.setId(id);
+        return repository.save(item);
+    }
+
+    @Override
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }
