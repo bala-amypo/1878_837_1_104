@@ -12,57 +12,37 @@ public class DeviceCatalogItem {
     @Column(unique = true, nullable = false)
     private String deviceCode;
 
-    private String deviceType;
+    @Column(nullable = false)
+    private String deviceType; // LAPTOP / MONITOR / etc.
+
+    @Column(nullable = false)
     private String model;
-    private Integer maxAllowedPerEmployee;
-    private Boolean active;
 
-  
-    public Long getId() {
-        return id;
-    }
+    @Column(nullable = false)
+    private int maxAllowedPerEmployee;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(nullable = false)
+    private boolean active = true;
 
-    public String getDeviceCode() {
-        return deviceCode;
-    }
+    // No-args constructor
+    public DeviceCatalogItem() {}
 
-    public void setDeviceCode(String deviceCode) {
-        this.deviceCode = deviceCode;
-    }
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getDeviceType() {
-        return deviceType;
-    }
+    public String getDeviceCode() { return deviceCode; }
+    public void setDeviceCode(String deviceCode) { this.deviceCode = deviceCode; }
 
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
-    }
+    public String getDeviceType() { return deviceType; }
+    public void setDeviceType(String deviceType) { this.deviceType = deviceType; }
 
-    public String getModel() {
-        return model;
-    }
+    public String getModel() { return model; }
+    public void setModel(String model) { this.model = model; }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
+    public int getMaxAllowedPerEmployee() { return maxAllowedPerEmployee; }
+    public void setMaxAllowedPerEmployee(int maxAllowedPerEmployee) { this.maxAllowedPerEmployee = maxAllowedPerEmployee; }
 
-    public Integer getMaxAllowedPerEmployee() {
-        return maxAllowedPerEmployee;
-    }
-
-    public void setMaxAllowedPerEmployee(Integer maxAllowedPerEmployee) {
-        this.maxAllowedPerEmployee = maxAllowedPerEmployee;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
