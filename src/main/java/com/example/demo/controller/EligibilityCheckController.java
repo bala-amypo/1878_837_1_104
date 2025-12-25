@@ -37,8 +37,10 @@ public class EligibilityCheckController {
         return ResponseEntity.ok(checks);
     }
 
+    
     @Operation(summary = "Get specific eligibility check record")
     @GetMapping("/{checkId}")
     public ResponseEntity<EligibilityCheckRecord> getCheckById(@PathVariable Long checkId) {
-        
-        throw new UnsupportedOperationException("Get by check ID not
+        throw new UnsupportedOperationException("Get by check ID not implemented");
+    }
+}
