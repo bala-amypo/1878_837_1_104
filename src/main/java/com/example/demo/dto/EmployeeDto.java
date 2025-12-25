@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeviceDto {
-    private String deviceCode;
-    private String deviceType;
-    private String model;
-    private Integer maxAllowedPerEmployee;
+public class EmployeeDto {
+    private String employeeId;
+    private String fullName;
+    private String email;
+    private String department;
+    private String jobRole;
     private Boolean active;
 }
