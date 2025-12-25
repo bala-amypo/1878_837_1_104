@@ -1,58 +1,62 @@
-// File: src/main/java/com/example/demo/controller/DeviceCatalogController.java
 package com.example.demo.controller;
 
 import com.example.demo.model.DeviceCatalogItem;
 import com.example.demo.service.DeviceCatalogService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "DeviceCatalog Endpoints")
 @RestController
 @RequestMapping("/api/devices")
+@Tag(name = "Device Catalog Endpoints", description = "Manage device catalog items")
+@SecurityRequirement(name = "bearerAuth")
 public class DeviceCatalogController {
 
-    private final DeviceCatalogService service;
+    private final DeviceCatalogService deviceCatalogService;
 
-    public DeviceCatalogController(DeviceCatalogService service) {
-        this.service = service;
+    public DeviceCatalogController(DeviceCatalogService deviceCatalogService) {
+        this.deviceCatalogService = deviceCatalogService;
     }
 
-    @Operation(summary = "Create new device catalog item")
     @PostMapping
-    public ResponseEntity<DeviceCatalogItem> create(@RequestBody DeviceCatalogItem item) {
-        DeviceCatalogItem created = service.createItem(item);
-        return ResponseEntity.ok(created);
+    @Operation(summary = "Create a new device catalog item")
+    public ResponseEntity<DeviceCatalogItem> createDevice(@RequestBody DeviceCatalogItem item) {
+        DeviceCatalogItem created = deviceCatalogService.createItem(item);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @Operation(summary = "List all device catalog items")
     @GetMapping
-    public ResponseEntity<List<DeviceCatalogItem>> getAll() {
-        List<DeviceCatalogItem> items = service.getAllItems();
-        return ResponseEntity.ok(items);
+    @Operation(summary = "Get all device catalog items")
+    public ResponseEntity<List<DeviceCatalogItem>> getAllDevices() {
+        List<DeviceCatalogItem> devices = deviceCatalogService.getAllItems();
+        return ResponseEntity.ok(devices);
     }
 
-    @Operation(summary = "Get specific device catalog item")
     @GetMapping("/{id}")
-    public ResponseEntity<DeviceCatalogItem> getById(@PathVariable Long id) {
-        // Not in service interface per spec — can be added later
-        throw new UnsupportedOperationException("Get by ID not implemented");
+    @Operation(summary = "Get device catalog item by ID")
+    public ResponseEntity<DeviceCatalogItem> getDeviceById(@PathVariable Long id) {
+        DeviceCatalogItem device = deviceCatalogService.getItemById(id);
+        return ResponseEntity.ok(device);
     }
 
-    @Operation(summary = "Update device active status")
     @PutMapping("/{id}/active")
-    public ResponseEntity<DeviceCatalogItem> updateActive(@PathVariable Long id, @RequestParam boolean active) {
-        DeviceCatalogItem updated = service.updateActiveStatus(id, active);
+    @Operation(summary = "Update device active status")
+    public ResponseEntity<DeviceCatalogItem> updateDeviceActiveStatus(
+            @PathVariable Long id,
+            @RequestParam boolean active) {
+        DeviceCatalogItem updated = deviceCatalogService.updateActiveStatus(id, active);
         return ResponseEntity.ok(updated);
     }
 
-    @Operation(summary = "Delete device catalog item")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        // Delete not in service interface per spec
-        throw new UnsupportedOperationException("Delete not implemented");
+    @Operation(summary = "Delete device catalog item")
+    public ResponseEntity<Void> deleteDevice(@PathVariable Long id) {
+        deviceCatalogService.deleteItem(id);
+        return ResponseEntity.noContent().build();
     }
 }

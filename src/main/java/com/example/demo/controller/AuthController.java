@@ -8,77 +8,65 @@ import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Authentication Endpoints")
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication Endpoints", description = "User registration and login")
 public class AuthController {
 
-    private final UserAccountRepository repository;
+    private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthenticationManager authenticationManager;
 
-    public AuthController(UserAccountRepository repository,
-                          PasswordEncoder passwordEncoder,
-                          JwtTokenProvider jwtTokenProvider,
-                          AuthenticationManager authenticationManager) {
-        this.repository = repository;
+    public AuthController(
+            UserAccountRepository userAccountRepository,
+            PasswordEncoder passwordEncoder,
+            JwtTokenProvider jwtTokenProvider) {
+        this.userAccountRepository = userAccountRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.authenticationManager = authenticationManager;
     }
 
-    @Operation(summary = "Register a new user account")
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    @Operation(summary = "Register a new user account")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         // Check if email already exists
-        if (repository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body(new AuthResponse(null, null, null, null, "Email already exists"));
+        if (userAccountRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Email already registered");
         }
 
-        UserAccount user = new UserAccount();
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setRole("IT_OPERATOR"); // default role or make configurable
-        user.setActive(true);
+        // Create new user account
+        UserAccount user = new UserAccount(
+                request.getFullName(),
+                request.getEmail(),
+                passwordEncoder.encode(request.getPassword()),
+                request.getRole());
 
-        UserAccount saved = repository.save(user);
+        UserAccount savedUser = userAccountRepository.save(user);
 
-        String token = jwtTokenProvider.generateToken(saved);
-
-        AuthResponse response = new AuthResponse(
-                token,
-                saved.getId(),
-                saved.getEmail(),
-                saved.getRole()
-        );
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
-    @Operation(summary = "Login with email and password")
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+    @Operation(summary = "Authenticate user and generate JWT token")
+    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+        UserAccount user = userAccountRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (!user.getActive()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("User account is not active");
+        }
 
-        UserAccount user = repository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid email or password");
+        }
 
         String token = jwtTokenProvider.generateToken(user);
 
@@ -86,8 +74,7 @@ public class AuthController {
                 token,
                 user.getId(),
                 user.getEmail(),
-                user.getRole()
-        );
+                user.getRole());
 
         return ResponseEntity.ok(response);
     }
