@@ -1,51 +1,53 @@
-// File: src/main/java/com/example/demo/controller/IssuedDeviceRecordController.java
 package com.example.demo.controller;
 
 import com.example.demo.model.IssuedDeviceRecord;
 import com.example.demo.service.IssuedDeviceRecordService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "IssuedDeviceRecordsEndpoints")
 @RestController
 @RequestMapping("/api/issued-devices")
+@Tag(name = "Issued Device Records Endpoints", description = "Manage device issuance and returns")
+@SecurityRequirement(name = "bearerAuth")
 public class IssuedDeviceRecordController {
 
-    private final IssuedDeviceRecordService service;
+    private final IssuedDeviceRecordService issuedDeviceRecordService;
 
-    public IssuedDeviceRecordController(IssuedDeviceRecordService service) {
-        this.service = service;
+    public IssuedDeviceRecordController(IssuedDeviceRecordService issuedDeviceRecordService) {
+        this.issuedDeviceRecordService = issuedDeviceRecordService;
     }
 
-    @Operation(summary = "Issue a device to employee")
     @PostMapping
+    @Operation(summary = "Issue a device to an employee")
     public ResponseEntity<IssuedDeviceRecord> issueDevice(@RequestBody IssuedDeviceRecord record) {
-        IssuedDeviceRecord issued = service.issueDevice(record);
-        return ResponseEntity.ok(issued);
+        IssuedDeviceRecord issued = issuedDeviceRecordService.issueDevice(record);
+        return ResponseEntity.status(HttpStatus.CREATED).body(issued);
     }
 
-    @Operation(summary = "Return a device")
     @PutMapping("/{id}/return")
+    @Operation(summary = "Mark a device as returned")
     public ResponseEntity<IssuedDeviceRecord> returnDevice(@PathVariable Long id) {
-        IssuedDeviceRecord returned = service.returnDevice(id);
+        IssuedDeviceRecord returned = issuedDeviceRecordService.returnDevice(id);
         return ResponseEntity.ok(returned);
     }
 
-    @Operation(summary = "Get all issued devices for an employee")
     @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<List<IssuedDeviceRecord>> getByEmployee(@PathVariable Long employeeId) {
-        List<IssuedDeviceRecord> devices = service.getIssuedDevicesByEmployee(employeeId);
-        return ResponseEntity.ok(devices);
+    @Operation(summary = "Get all issued devices for an employee")
+    public ResponseEntity<List<IssuedDeviceRecord>> getIssuedDevicesByEmployee(@PathVariable Long employeeId) {
+        List<IssuedDeviceRecord> records = issuedDeviceRecordService.getIssuedDevicesByEmployee(employeeId);
+        return ResponseEntity.ok(records);
     }
 
-    @Operation(summary = "Get specific issued device record")
     @GetMapping("/{id}")
-    public ResponseEntity<IssuedDeviceRecord> getById(@PathVariable Long id) {
-        // Not in service interface
-        throw new UnsupportedOperationException("Get by ID not implemented");
+    @Operation(summary = "Get issued device record by ID")
+    public ResponseEntity<IssuedDeviceRecord> getRecordById(@PathVariable Long id) {
+        IssuedDeviceRecord record = issuedDeviceRecordService.getRecordById(id);
+        return ResponseEntity.ok(record);
     }
 }

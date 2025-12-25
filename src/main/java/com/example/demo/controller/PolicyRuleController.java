@@ -1,58 +1,62 @@
-// File: src/main/java/com/example/demo/controller/PolicyRuleController.java
 package com.example.demo.controller;
 
 import com.example.demo.model.PolicyRule;
 import com.example.demo.service.PolicyRuleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Policy RulesEndpoints")
 @RestController
 @RequestMapping("/api/policy-rules")
+@Tag(name = "Policy Rules Endpoints", description = "Manage policy rules for device issuance")
+@SecurityRequirement(name = "bearerAuth")
 public class PolicyRuleController {
 
-    private final PolicyRuleService service;
+    private final PolicyRuleService policyRuleService;
 
-    public PolicyRuleController(PolicyRuleService service) {
-        this.service = service;
+    public PolicyRuleController(PolicyRuleService policyRuleService) {
+        this.policyRuleService = policyRuleService;
     }
 
-    @Operation(summary = "Create new policy rule")
     @PostMapping
-    public ResponseEntity<PolicyRule> create(@RequestBody PolicyRule rule) {
-        PolicyRule created = service.createRule(rule);
-        return ResponseEntity.ok(created);
+    @Operation(summary = "Create a new policy rule")
+    public ResponseEntity<PolicyRule> createRule(@RequestBody PolicyRule rule) {
+        PolicyRule created = policyRuleService.createRule(rule);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @Operation(summary = "List all policy rules")
     @GetMapping
-    public ResponseEntity<List<PolicyRule>> getAll() {
-        List<PolicyRule> rules = service.getAllRules();
+    @Operation(summary = "Get all policy rules")
+    public ResponseEntity<List<PolicyRule>> getAllRules() {
+        List<PolicyRule> rules = policyRuleService.getAllRules();
         return ResponseEntity.ok(rules);
     }
 
-    @Operation(summary = "List only active policy rules")
     @GetMapping("/active")
-    public ResponseEntity<List<PolicyRule>> getActive() {
-        List<PolicyRule> activeRules = service.getActiveRules();
+    @Operation(summary = "Get all active policy rules")
+    public ResponseEntity<List<PolicyRule>> getActiveRules() {
+        List<PolicyRule> activeRules = policyRuleService.getActiveRules();
         return ResponseEntity.ok(activeRules);
     }
 
-    @Operation(summary = "Update policy rule active status")
     @PutMapping("/{id}/active")
-    public ResponseEntity<Void> updateActive(@PathVariable Long id, @RequestParam boolean active) {
-        // Not in service interface per spec
-        throw new UnsupportedOperationException("Update active status not implemented");
+    @Operation(summary = "Update policy rule active status")
+    public ResponseEntity<PolicyRule> updateRuleActiveStatus(
+            @PathVariable Long id,
+            @RequestParam boolean active) {
+        PolicyRule updated = policyRuleService.updateActiveStatus(id, active);
+        return ResponseEntity.ok(updated);
     }
 
-    @Operation(summary = "Delete policy rule")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        // Delete not in service interface
-        throw new UnsupportedOperationException("Delete not implemented");
+    @Operation(summary = "Delete a policy rule")
+    public ResponseEntity<Void> deleteRule(@PathVariable Long id) {
+        policyRuleService.deleteRule(id);
+        return ResponseEntity.noContent().build();
     }
 }
