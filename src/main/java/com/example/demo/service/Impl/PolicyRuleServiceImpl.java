@@ -1,5 +1,7 @@
+// File: src/main/java/com/example/demo/service/impl/PolicyRuleServiceImpl.java
 package com.example.demo.service.impl;
 
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.PolicyRule;
 import com.example.demo.repository.PolicyRuleRepository;
 import com.example.demo.service.PolicyRuleService;
@@ -17,21 +19,16 @@ public class PolicyRuleServiceImpl implements PolicyRuleService {
     }
 
     @Override
-    public PolicyRule create(PolicyRule rule) {
+    public PolicyRule createRule(PolicyRule rule) {
         if (repository.existsByRuleCode(rule.getRuleCode())) {
-            throw new RuntimeException("Rule with code already exists");
+            throw new BadRequestException("Rulecode already exists");
         }
         return repository.save(rule);
     }
 
     @Override
-    public List<PolicyRule> getAll() {
+    public List<PolicyRule> getAllRules() {
         return repository.findAll();
-    }
-
-    @Override
-    public void delete(Long id) {
-        repository.deleteById(id);
     }
 
     @Override
