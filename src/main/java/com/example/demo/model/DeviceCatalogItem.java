@@ -1,48 +1,48 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "device_catalog_items")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class DeviceCatalogItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String deviceCode;
 
     @Column(nullable = false)
-    private String deviceType; // LAPTOP / MONITOR / etc.
+    private String deviceType; // LAPTOP / MONITOR / KEYBOARD / MOUSE / PHONE / TABLET
 
     @Column(nullable = false)
     private String model;
 
     @Column(nullable = false)
-    private int maxAllowedPerEmployee;
+    private Integer maxAllowedPerEmployee;
 
     @Column(nullable = false)
-    private boolean active = true;
+    private Boolean active = true;
 
-    // No-args constructor
-    public DeviceCatalogItem() {}
+    @PrePersist
+    protected void onCreate() {
+        if (this.active == null) {
+            this.active = true;
+        }
+    }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getDeviceCode() { return deviceCode; }
-    public void setDeviceCode(String deviceCode) { this.deviceCode = deviceCode; }
-
-    public String getDeviceType() { return deviceType; }
-    public void setDeviceType(String deviceType) { this.deviceType = deviceType; }
-
-    public String getModel() { return model; }
-    public void setModel(String model) { this.model = model; }
-
-    public int getMaxAllowedPerEmployee() { return maxAllowedPerEmployee; }
-    public void setMaxAllowedPerEmployee(int maxAllowedPerEmployee) { this.maxAllowedPerEmployee = maxAllowedPerEmployee; }
-
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public DeviceCatalogItem(String deviceCode, String deviceType, String model, Integer maxAllowedPerEmployee) {
+        this.deviceCode = deviceCode;
+        this.deviceType = deviceType;
+        this.model = model;
+        this.maxAllowedPerEmployee = maxAllowedPerEmployee;
+        this.active = true;
+    }
 }

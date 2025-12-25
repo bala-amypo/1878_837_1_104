@@ -1,26 +1,33 @@
-// File: src/main/java/com/example/demo/model/EligibilityCheckRecord.java
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "eligibility_check_records")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EligibilityCheckRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private EmployeeProfile employee;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_item_id", nullable = false)
     private DeviceCatalogItem deviceItem;
 
     @Column(nullable = false)
-    private boolean isEligible;
+    private Boolean isEligible;
 
     @Column(nullable = false, length = 1000)
     private String reason;
@@ -30,23 +37,14 @@ public class EligibilityCheckRecord {
 
     @PrePersist
     protected void onCreate() {
-        checkedAt = LocalDateTime.now();
+        this.checkedAt = LocalDateTime.now();
     }
 
-    public EligibilityCheckRecord() {}
-
-    // Getters
-    public Long getId() { return id; }
-    public EmployeeProfile getEmployee() { return employee; }
-    public DeviceCatalogItem getDeviceItem() { return deviceItem; }
-    public boolean isEligible() { return isEligible; }
-    public String getReason() { return reason; }
-    public LocalDateTime getCheckedAt() { return checkedAt; }
-
-    // Setters
-    public void setId(Long id) { this.id = id; }
-    public void setEmployee(EmployeeProfile employee) { this.employee = employee; }
-    public void setDeviceItem(DeviceCatalogItem deviceItem) { this.deviceItem = deviceItem; }
-    public void setEligible(boolean eligible) { this.isEligible = eligible; }
-    public void setReason(String reason) { this.reason = reason; }
+    public EligibilityCheckRecord(EmployeeProfile employee, DeviceCatalogItem deviceItem, Boolean isEligible,
+            String reason) {
+        this.employee = employee;
+        this.deviceItem = deviceItem;
+        this.isEligible = isEligible;
+        this.reason = reason;
+    }
 }

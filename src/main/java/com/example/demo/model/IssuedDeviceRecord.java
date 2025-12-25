@@ -1,47 +1,51 @@
-// File: src/main/java/com/example/demo/model/IssuedDeviceRecord.java
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "issued_device_records")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class IssuedDeviceRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private EmployeeProfile employee;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_item_id", nullable = false)
     private DeviceCatalogItem deviceItem;
 
     @Column(nullable = false)
     private LocalDate issuedDate;
 
+    @Column
     private LocalDate returnedDate;
 
     @Column(nullable = false)
-    private String status = "ISSUED";
+    private String status = "ISSUED"; // ISSUED / RETURNED
 
-    public IssuedDeviceRecord() {}
+    @PrePersist
+    protected void onCreate() {
+        if (this.status == null || this.status.trim().isEmpty()) {
+            this.status = "ISSUED";
+        }
+    }
 
-    // Getters
-    public Long getId() { return id; }
-    public EmployeeProfile getEmployee() { return employee; }
-    public DeviceCatalogItem getDeviceItem() { return deviceItem; }
-    public LocalDate getIssuedDate() { return issuedDate; }
-    public LocalDate getReturnedDate() { return returnedDate; }
-    public String getStatus() { return status; }
-
-    // Setters
-    public void setId(Long id) { this.id = id; }
-    public void setEmployee(EmployeeProfile employee) { this.employee = employee; }
-    public void setDeviceItem(DeviceCatalogItem deviceItem) { this.deviceItem = deviceItem; }
-    public void setIssuedDate(LocalDate issuedDate) { this.issuedDate = issuedDate; }
-    public void setReturnedDate(LocalDate returnedDate) { this.returnedDate = returnedDate; }
-    public void setStatus(String status) { this.status = status; }
+    public IssuedDeviceRecord(EmployeeProfile employee, DeviceCatalogItem deviceItem, LocalDate issuedDate) {
+        this.employee = employee;
+        this.deviceItem = deviceItem;
+        this.issuedDate = issuedDate;
+        this.status = "ISSUED";
+    }
 }
