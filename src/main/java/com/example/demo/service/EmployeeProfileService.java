@@ -1,7 +1,7 @@
-// File: src/main/java/com/example/demo/service/EmployeeProfileService.java
 package com.example.demo.service;
 
 import com.example.demo.model.EmployeeProfile;
+
 import java.util.List;
 
 public interface EmployeeProfileService {
@@ -13,4 +13,6 @@ public interface EmployeeProfileService {
     List<EmployeeProfile> getAllEmployees();
 
     EmployeeProfile updateEmployeeStatus(Long id, boolean active);
+
+    void deleteEmployee(Long id);
 }

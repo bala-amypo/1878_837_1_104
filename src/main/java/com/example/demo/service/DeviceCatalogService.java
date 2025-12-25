@@ -1,7 +1,7 @@
-// File: src/main/java/com/example/demo/service/DeviceCatalogService.java
 package com.example.demo.service;
 
 import com.example.demo.model.DeviceCatalogItem;
+
 import java.util.List;
 
 public interface DeviceCatalogService {
@@ -11,4 +11,8 @@ public interface DeviceCatalogService {
     DeviceCatalogItem updateActiveStatus(Long id, boolean active);
 
     List<DeviceCatalogItem> getAllItems();
+
+    DeviceCatalogItem getItemById(Long id);
+
+    void deleteItem(Long id);
 }
