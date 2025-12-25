@@ -1,4 +1,3 @@
-// File: src/main/java/com/example/demo/model/IssuedDeviceRecord.java
 package com.example.demo.model;
 
 import jakarta.persistence.*;

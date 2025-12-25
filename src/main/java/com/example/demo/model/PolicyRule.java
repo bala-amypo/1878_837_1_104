@@ -13,65 +13,39 @@ public class PolicyRule {
     private String ruleCode;
 
     private String description;
-    private String appliesToRole;
-    private String appliesToDepartment;
-    private Integer maxDevicesAllowed;
-    private Boolean active;
 
-   
-    public Long getId() {
-        return id;
-    }
+    private String appliesToRole; // nullable = all
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String appliesToDepartment; // nullable = all
 
-    public String getRuleCode() {
-        return ruleCode;
-    }
+    @Column(nullable = false)
+    private int maxDevicesAllowed;
 
-    public void setRuleCode(String ruleCode) {
-        this.ruleCode = ruleCode;
-    }
+    @Column(nullable = false)
+    private boolean active = true;
 
-    public String getDescription() {
-        return description;
-    }
+    // No-args constructor
+    public PolicyRule() {}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getAppliesToRole() {
-        return appliesToRole;
-    }
+    public String getRuleCode() { return ruleCode; }
+    public void setRuleCode(String ruleCode) { this.ruleCode = ruleCode; }
 
-    public void setAppliesToRole(String appliesToRole) {
-        this.appliesToRole = appliesToRole;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getAppliesToDepartment() {
-        return appliesToDepartment;
-    }
+    public String getAppliesToRole() { return appliesToRole; }
+    public void setAppliesToRole(String appliesToRole) { this.appliesToRole = appliesToRole; }
 
-    public void setAppliesToDepartment(String appliesToDepartment) {
-        this.appliesToDepartment = appliesToDepartment;
-    }
+    public String getAppliesToDepartment() { return appliesToDepartment; }
+    public void setAppliesToDepartment(String appliesToDepartment) { this.appliesToDepartment = appliesToDepartment; }
 
-    public Integer getMaxDevicesAllowed() {
-        return maxDevicesAllowed;
-    }
+    public int getMaxDevicesAllowed() { return maxDevicesAllowed; }
+    public void setMaxDevicesAllowed(int maxDevicesAllowed) { this.maxDevicesAllowed = maxDevicesAllowed; }
 
-    public void setMaxDevicesAllowed(Integer maxDevicesAllowed) {
-        this.maxDevicesAllowed = maxDevicesAllowed;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
