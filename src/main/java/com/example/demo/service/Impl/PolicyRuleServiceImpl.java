@@ -1,7 +1,7 @@
-// File: src/main/java/com/example/demo/service/impl/PolicyRuleServiceImpl.java
 package com.example.demo.service.impl;
 
 import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.PolicyRule;
 import com.example.demo.repository.PolicyRuleRepository;
 import com.example.demo.service.PolicyRuleService;
@@ -12,27 +12,44 @@ import java.util.List;
 @Service
 public class PolicyRuleServiceImpl implements PolicyRuleService {
 
-    private final PolicyRuleRepository repository;
+    private final PolicyRuleRepository policyRuleRepository;
 
-    public PolicyRuleServiceImpl(PolicyRuleRepository repository) {
-        this.repository = repository;
+    public PolicyRuleServiceImpl(PolicyRuleRepository policyRuleRepository) {
+        this.policyRuleRepository = policyRuleRepository;
     }
 
     @Override
     public PolicyRule createRule(PolicyRule rule) {
-        if (repository.existsByRuleCode(rule.getRuleCode())) {
-            throw new BadRequestException("Rulecode already exists");
+        // Check duplicate ruleCode
+        if (policyRuleRepository.findByRuleCode(rule.getRuleCode()).isPresent()) {
+            throw new BadRequestException("Rule code already exists: " + rule.getRuleCode());
         }
-        return repository.save(rule);
+
+        return policyRuleRepository.save(rule);
     }
 
     @Override
     public List<PolicyRule> getAllRules() {
-        return repository.findAll();
+        return policyRuleRepository.findAll();
     }
 
     @Override
     public List<PolicyRule> getActiveRules() {
-        return repository.findByActiveTrue();
+        return policyRuleRepository.findByActiveTrue();
+    }
+
+    @Override
+    public PolicyRule updateActiveStatus(Long id, boolean active) {
+        PolicyRule rule = policyRuleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Policy rule not found with id: " + id));
+        rule.setActive(active);
+        return policyRuleRepository.save(rule);
+    }
+
+    @Override
+    public void deleteRule(Long id) {
+        PolicyRule rule = policyRuleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Policy rule not found with id: " + id));
+        policyRuleRepository.delete(rule);
     }
 }
