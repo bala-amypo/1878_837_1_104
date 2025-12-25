@@ -8,7 +8,6 @@ import com.example.demo.repository.*;
 import com.example.demo.service.EligibilityCheckService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -48,25 +47,22 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
             return createRecord(employee, device, false, "Device inactive");
         }
 
-        // Check no active issuance exists for this employee-device
-        boolean hasActiveIssuance = issuedRepo.findActiveByEmployeeAndDevice(employeeId, deviceItemId).size() > 0;
+        boolean hasActiveIssuance = !issuedRepo.findActiveByEmployeeAndDevice(employeeId, deviceItemId).isEmpty();
         if (hasActiveIssuance) {
             return createRecord(employee, device, false, "Active issuance exists");
         }
 
-        // Check per-device limit
         long currentActiveCount = issuedRepo.countActiveDevicesForEmployee(employeeId);
-        if (currentActiveCount + 1 > device.getMaxAllowedPerEmployee()) {
+        if (currentActiveCount >= device.getMaxAllowedPerEmployee()) {
             return createRecord(employee, device, false, "Maximum allowed devices reached for this device type");
         }
 
-        // Check policy rules
         List<PolicyRule> activeRules = policyRepo.findByActiveTrue();
         for (PolicyRule rule : activeRules) {
             boolean applies = (rule.getAppliesToRole() == null || rule.getAppliesToRole().equals(employee.getJobRole())) &&
                               (rule.getAppliesToDepartment() == null || rule.getAppliesToDepartment().equals(employee.getDepartment()));
 
-            if (applies && currentActiveCount + 1 > rule.getMaxDevicesAllowed()) {
+            if (applies && currentActiveCount >= rule.getMaxDevicesAllowed()) {
                 return createRecord(employee, device, false, "Policy violation: Maximum devices allowed by rule '" + rule.getRuleCode() + "'");
             }
         }
@@ -86,7 +82,6 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
         record.setDeviceItem(device);
         record.setEligible(eligible);
         record.setReason(reason);
-        // checkedAt auto-populated by @PrePersist
         return checkRepo.save(record);
     }
 }
