@@ -1,13 +1,18 @@
+// File: src/main/java/com/example/demo/controller/EligibilityCheckController.java
 package com.example.demo.controller;
 
 import com.example.demo.model.EligibilityCheckRecord;
 import com.example.demo.service.EligibilityCheckService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Eligibility Check Endpoints")
 @RestController
-@RequestMapping("/eligibility-checks")
+@RequestMapping("/api/eligibility")
 public class EligibilityCheckController {
 
     private final EligibilityCheckService service;
@@ -16,25 +21,24 @@ public class EligibilityCheckController {
         this.service = service;
     }
 
+    @Operation(summary = "Validate eligibility for device issuance")
     @PostMapping("/validate/{employeeId}/{deviceItemId}")
-    public EligibilityCheckRecord validate(
+    public ResponseEntity<EligibilityCheckRecord> validateEligibility(
             @PathVariable Long employeeId,
             @PathVariable Long deviceItemId) {
-        return service.validate(employeeId, deviceItemId);
+        EligibilityCheckRecord record = service.validateEligibility(employeeId, deviceItemId);
+        return ResponseEntity.ok(record);
     }
 
-    @PostMapping
-    public EligibilityCheckRecord save(@RequestBody EligibilityCheckRecord record) {
-        return service.save(record);
-    }
-
-    @GetMapping
-    public List<EligibilityCheckRecord> getAll() {
-        return service.getAll();
-    }
-
+    @Operation(summary = "Get all eligibility checks for an employee")
     @GetMapping("/employee/{employeeId}")
-    public List<EligibilityCheckRecord> getByEmployee(@PathVariable Long employeeId) {
-        return service.getByEmployee(employeeId);
+    public ResponseEntity<List<EligibilityCheckRecord>> getChecksByEmployee(@PathVariable Long employeeId) {
+        List<EligibilityCheckRecord> checks = service.getChecksByEmployee(employeeId);
+        return ResponseEntity.ok(checks);
     }
-}
+
+    @Operation(summary = "Get specific eligibility check record")
+    @GetMapping("/{checkId}")
+    public ResponseEntity<EligibilityCheckRecord> getCheckById(@PathVariable Long checkId) {
+        
+        throw new UnsupportedOperationException("Get by check ID not
