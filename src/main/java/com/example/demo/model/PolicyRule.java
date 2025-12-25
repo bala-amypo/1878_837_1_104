@@ -1,51 +1,53 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "policy_rules")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PolicyRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String ruleCode;
 
+    @Column
     private String description;
 
-    private String appliesToRole; // nullable = all
+    @Column
+    private String appliesToRole; // ADMIN / DEVELOPER / MANAGER / STAFF / null for all
 
-    private String appliesToDepartment; // nullable = all
+    @Column
+    private String appliesToDepartment; // IT / HR / SALES / FINANCE / null for all
 
     @Column(nullable = false)
-    private int maxDevicesAllowed;
+    private Integer maxDevicesAllowed;
 
     @Column(nullable = false)
-    private boolean active = true;
+    private Boolean active = true;
 
-    // No-args constructor
-    public PolicyRule() {}
+    @PrePersist
+    protected void onCreate() {
+        if (this.active == null) {
+            this.active = true;
+        }
+    }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getRuleCode() { return ruleCode; }
-    public void setRuleCode(String ruleCode) { this.ruleCode = ruleCode; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getAppliesToRole() { return appliesToRole; }
-    public void setAppliesToRole(String appliesToRole) { this.appliesToRole = appliesToRole; }
-
-    public String getAppliesToDepartment() { return appliesToDepartment; }
-    public void setAppliesToDepartment(String appliesToDepartment) { this.appliesToDepartment = appliesToDepartment; }
-
-    public int getMaxDevicesAllowed() { return maxDevicesAllowed; }
-    public void setMaxDevicesAllowed(int maxDevicesAllowed) { this.maxDevicesAllowed = maxDevicesAllowed; }
-
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public PolicyRule(String ruleCode, String description, String appliesToRole, String appliesToDepartment,
+            Integer maxDevicesAllowed) {
+        this.ruleCode = ruleCode;
+        this.description = description;
+        this.appliesToRole = appliesToRole;
+        this.appliesToDepartment = appliesToDepartment;
+        this.maxDevicesAllowed = maxDevicesAllowed;
+        this.active = true;
+    }
 }
