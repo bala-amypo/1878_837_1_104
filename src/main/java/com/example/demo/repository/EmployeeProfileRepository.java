@@ -1,3 +1,4 @@
+// File: src/main/java/com/example/demo/repository/EmployeeProfileRepository.java
 package com.example.demo.repository;
 
 import com.example.demo.model.EmployeeProfile;
@@ -6,7 +7,10 @@ import java.util.Optional;
 import java.util.List;
 
 public interface EmployeeProfileRepository extends JpaRepository<EmployeeProfile, Long> {
+
     Optional<EmployeeProfile> findByEmployeeId(String employeeId);
     Optional<EmployeeProfile> findByEmail(String email);
+    boolean existsByEmployeeId(String employeeId);
+    boolean existsByEmail(String email);
     List<EmployeeProfile> findAll();
 }
