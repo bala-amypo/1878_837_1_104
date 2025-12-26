@@ -2,10 +2,11 @@ package com.example.demo.service.impl;
 
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
+import com.example.demo.service.EligibilityCheckService;
 
 import java.util.List;
 
-public class EligibilityCheckServiceImpl {
+public class EligibilityCheckServiceImpl implements EligibilityCheckService {
 
     private final EmployeeProfileRepository empRepo;
     private final DeviceCatalogItemRepository devRepo;
@@ -19,7 +20,6 @@ public class EligibilityCheckServiceImpl {
             IssuedDeviceRecordRepository i,
             PolicyRuleRepository p,
             EligibilityCheckRecordRepository el) {
-
         this.empRepo = e;
         this.devRepo = d;
         this.issuedRepo = i;
@@ -27,8 +27,8 @@ public class EligibilityCheckServiceImpl {
         this.eligibilityRepo = el;
     }
 
+    @Override
     public EligibilityCheckRecord validateEligibility(Long empId, Long devId) {
-
         EligibilityCheckRecord rec = new EligibilityCheckRecord();
         rec.setEmployeeId(empId);
         rec.setDeviceItemId(devId);
@@ -89,6 +89,7 @@ public class EligibilityCheckServiceImpl {
         return eligibilityRepo.save(rec);
     }
 
+    @Override
     public List<EligibilityCheckRecord> getChecksByEmployee(Long empId) {
         return eligibilityRepo.findByEmployeeId(empId);
     }
