@@ -30,7 +30,8 @@ public class EmployeeProfileController {
     }
 
     @PutMapping("/{id}")
-    public EmployeeProfile update(@PathVariable Long id, @RequestBody EmployeeProfile emp) {
+    public EmployeeProfile update(@PathVariable Long id,
+                                  @RequestBody EmployeeProfile emp) {
         emp.setId(id);
         store.put(id, emp);
         return emp;
@@ -39,6 +40,6 @@ public class EmployeeProfileController {
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
         store.remove(id);
-        return "Deleted";
+        return "Employee deleted";
     }
 }

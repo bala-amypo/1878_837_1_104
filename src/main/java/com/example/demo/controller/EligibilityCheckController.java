@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 public class EligibilityCheckController {
 
     @PostMapping
-    public String check() {
-        return "Eligibility checked (demo)";
+    public String checkEligibility(@RequestParam Long employeeId,
+                                   @RequestParam Long deviceId) {
+        return "Eligibility checked for employee "
+                + employeeId + " and device " + deviceId;
     }
 }

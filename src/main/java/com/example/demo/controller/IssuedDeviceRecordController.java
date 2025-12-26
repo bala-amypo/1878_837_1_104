@@ -15,14 +15,28 @@ public class IssuedDeviceRecordController {
     @PostMapping
     public IssuedDeviceRecord issue(@RequestBody IssuedDeviceRecord record) {
         record.setId(idCounter++);
+        record.setStatus("ISSUED");
         store.put(record.getId(), record);
         return record;
     }
 
+    @GetMapping
+    public Collection<IssuedDeviceRecord> getAll() {
+        return store.values();
+    }
+
     @PutMapping("/{id}/return")
     public IssuedDeviceRecord returnDevice(@PathVariable Long id) {
-        IssuedDeviceRecord r = store.get(id);
-        if (r != null) r.setStatus("RETURNED");
-        return r;
+        IssuedDeviceRecord record = store.get(id);
+        if (record != null) {
+            record.setStatus("RETURNED");
+        }
+        return record;
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id) {
+        store.remove(id);
+        return "Issued record deleted";
     }
 }

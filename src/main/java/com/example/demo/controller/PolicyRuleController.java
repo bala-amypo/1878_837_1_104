@@ -23,4 +23,23 @@ public class PolicyRuleController {
     public Collection<PolicyRule> getAll() {
         return store.values();
     }
+
+    @GetMapping("/{id}")
+    public PolicyRule getById(@PathVariable Long id) {
+        return store.get(id);
+    }
+
+    @PutMapping("/{id}")
+    public PolicyRule update(@PathVariable Long id,
+                             @RequestBody PolicyRule rule) {
+        rule.setId(id);
+        store.put(id, rule);
+        return rule;
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id) {
+        store.remove(id);
+        return "Policy deleted";
+    }
 }

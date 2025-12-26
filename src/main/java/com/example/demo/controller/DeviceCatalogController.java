@@ -30,7 +30,8 @@ public class DeviceCatalogController {
     }
 
     @PutMapping("/{id}")
-    public DeviceCatalogItem update(@PathVariable Long id, @RequestBody DeviceCatalogItem item) {
+    public DeviceCatalogItem update(@PathVariable Long id,
+                                    @RequestBody DeviceCatalogItem item) {
         item.setId(id);
         store.put(id, item);
         return item;
@@ -39,6 +40,6 @@ public class DeviceCatalogController {
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
         store.remove(id);
-        return "Deleted";
+        return "Device deleted";
     }
 }
