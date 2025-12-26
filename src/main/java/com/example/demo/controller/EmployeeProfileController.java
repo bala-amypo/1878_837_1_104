@@ -10,13 +10,13 @@ import java.util.*;
 public class EmployeeProfileController {
 
     private final Map<Long, EmployeeProfile> store = new HashMap<>();
-    private long idCounter = 1;
+    private long id = 1;
 
     @PostMapping
-    public EmployeeProfile create(@RequestBody EmployeeProfile emp) {
-        emp.setId(idCounter++);
-        store.put(emp.getId(), emp);
-        return emp;
+    public EmployeeProfile create(@RequestBody EmployeeProfile e) {
+        e.setId(id++);
+        store.put(e.getId(), e);
+        return e;
     }
 
     @GetMapping
@@ -25,21 +25,20 @@ public class EmployeeProfileController {
     }
 
     @GetMapping("/{id}")
-    public EmployeeProfile getById(@PathVariable Long id) {
+    public EmployeeProfile get(@PathVariable Long id) {
         return store.get(id);
     }
 
     @PutMapping("/{id}")
-    public EmployeeProfile update(@PathVariable Long id,
-                                  @RequestBody EmployeeProfile emp) {
-        emp.setId(id);
-        store.put(id, emp);
-        return emp;
+    public EmployeeProfile update(@PathVariable Long id, @RequestBody EmployeeProfile e) {
+        e.setId(id);
+        store.put(id, e);
+        return e;
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
         store.remove(id);
-        return "Employee deleted";
+        return "Deleted";
     }
 }

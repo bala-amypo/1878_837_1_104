@@ -10,13 +10,13 @@ import java.util.*;
 public class DeviceCatalogController {
 
     private final Map<Long, DeviceCatalogItem> store = new HashMap<>();
-    private long idCounter = 1;
+    private long id = 1;
 
     @PostMapping
-    public DeviceCatalogItem create(@RequestBody DeviceCatalogItem item) {
-        item.setId(idCounter++);
-        store.put(item.getId(), item);
-        return item;
+    public DeviceCatalogItem create(@RequestBody DeviceCatalogItem d) {
+        d.setId(id++);
+        store.put(d.getId(), d);
+        return d;
     }
 
     @GetMapping
@@ -24,22 +24,16 @@ public class DeviceCatalogController {
         return store.values();
     }
 
-    @GetMapping("/{id}")
-    public DeviceCatalogItem getById(@PathVariable Long id) {
-        return store.get(id);
-    }
-
     @PutMapping("/{id}")
-    public DeviceCatalogItem update(@PathVariable Long id,
-                                    @RequestBody DeviceCatalogItem item) {
-        item.setId(id);
-        store.put(id, item);
-        return item;
+    public DeviceCatalogItem update(@PathVariable Long id, @RequestBody DeviceCatalogItem d) {
+        d.setId(id);
+        store.put(id, d);
+        return d;
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
         store.remove(id);
-        return "Device deleted";
+        return "Deleted";
     }
 }

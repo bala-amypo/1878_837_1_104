@@ -10,33 +10,20 @@ import java.util.*;
 public class IssuedDeviceRecordController {
 
     private final Map<Long, IssuedDeviceRecord> store = new HashMap<>();
-    private long idCounter = 1;
+    private long id = 1;
 
     @PostMapping
-    public IssuedDeviceRecord issue(@RequestBody IssuedDeviceRecord record) {
-        record.setId(idCounter++);
-        record.setStatus("ISSUED");
-        store.put(record.getId(), record);
-        return record;
-    }
-
-    @GetMapping
-    public Collection<IssuedDeviceRecord> getAll() {
-        return store.values();
+    public IssuedDeviceRecord issue(@RequestBody IssuedDeviceRecord r) {
+        r.setId(id++);
+        r.setStatus("ISSUED");
+        store.put(r.getId(), r);
+        return r;
     }
 
     @PutMapping("/{id}/return")
     public IssuedDeviceRecord returnDevice(@PathVariable Long id) {
-        IssuedDeviceRecord record = store.get(id);
-        if (record != null) {
-            record.setStatus("RETURNED");
-        }
-        return record;
-    }
-
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
-        store.remove(id);
-        return "Issued record deleted";
+        IssuedDeviceRecord r = store.get(id);
+        if (r != null) r.setStatus("RETURNED");
+        return r;
     }
 }
