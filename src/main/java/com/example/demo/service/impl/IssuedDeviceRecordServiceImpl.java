@@ -1,25 +1,26 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.IssuedDeviceRecord;
-import com.example.demo.repository.*;
+import com.example.demo.repository.IssuedDeviceRecordRepository;
+import com.example.demo.service.IssuedDeviceRecordService;
+import com.example.demo.exception.BadRequestException;
 
-public class IssuedDeviceRecordServiceImpl {
+public class IssuedDeviceRecordServiceImpl implements IssuedDeviceRecordService {
 
     private final IssuedDeviceRecordRepository repo;
 
-    public IssuedDeviceRecordServiceImpl(
-            IssuedDeviceRecordRepository repo,
-            EmployeeProfileRepository e,
-            DeviceCatalogItemRepository d) {
+    // 🔴 EXACT constructor expected by tests
+    public IssuedDeviceRecordServiceImpl(IssuedDeviceRecordRepository repo) {
         this.repo = repo;
     }
 
+    @Override
     public IssuedDeviceRecord returnDevice(Long id) {
-        IssuedDeviceRecord r = repo.findById(id).orElseThrow();
-        if ("RETURNED".equals(r.getStatus()))
+        IssuedDeviceRecord record = repo.findById(id).orElseThrow();
+        if ("RETURNED".equals(record.getStatus())) {
             throw new BadRequestException("already returned");
-        r.setStatus("RETURNED");
-        return repo.save(r);
+        }
+        record.setStatus("RETURNED");
+        return repo.save(record);
     }
 }
