@@ -1,48 +1,22 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "device_catalog_items")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class DeviceCatalogItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String deviceCode;
+    private String deviceName;
+    private boolean available = true;
 
-    @Column(nullable = false)
-    private String deviceType; // LAPTOP / MONITOR / KEYBOARD / MOUSE / PHONE / TABLET
+    public Long getId() { return id; }
+    public String getDeviceName() { return deviceName; }
+    public boolean isAvailable() { return available; }
 
-    @Column(nullable = false)
-    private String model;
-
-    @Column(nullable = false)
-    private Integer maxAllowedPerEmployee;
-
-    @Column(nullable = false)
-    private Boolean active = true;
-
-    @PrePersist
-    protected void onCreate() {
-        if (this.active == null) {
-            this.active = true;
-        }
-    }
-
-    public DeviceCatalogItem(String deviceCode, String deviceType, String model, Integer maxAllowedPerEmployee) {
-        this.deviceCode = deviceCode;
-        this.deviceType = deviceType;
-        this.model = model;
-        this.maxAllowedPerEmployee = maxAllowedPerEmployee;
-        this.active = true;
-    }
+    public void setId(Long id) { this.id = id; }
+    public void setDeviceName(String deviceName) { this.deviceName = deviceName; }
+    public void setAvailable(boolean available) { this.available = available; }
 }
