@@ -1,21 +1,28 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.IssuedDeviceRecord;
-import com.example.demo.service.IssuedDeviceRecordService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/issued-devices")
 public class IssuedDeviceRecordController {
 
-    private final IssuedDeviceRecordService service;
+    private final Map<Long, IssuedDeviceRecord> store = new HashMap<>();
+    private long idCounter = 1;
 
-    public IssuedDeviceRecordController(IssuedDeviceRecordService service) {
-        this.service = service;
+    @PostMapping
+    public IssuedDeviceRecord issue(@RequestBody IssuedDeviceRecord record) {
+        record.setId(idCounter++);
+        store.put(record.getId(), record);
+        return record;
     }
 
     @PutMapping("/{id}/return")
     public IssuedDeviceRecord returnDevice(@PathVariable Long id) {
-        return service.returnDevice(id);
+        IssuedDeviceRecord r = store.get(id);
+        if (r != null) r.setStatus("RETURNED");
+        return r;
     }
 }

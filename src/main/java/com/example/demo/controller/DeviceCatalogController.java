@@ -1,35 +1,44 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.DeviceCatalogItem;
-import com.example.demo.service.DeviceCatalogService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/devices")
 public class DeviceCatalogController {
 
-    private final DeviceCatalogService service;
-
-    public DeviceCatalogController(DeviceCatalogService service) {
-        this.service = service;
-    }
+    private final Map<Long, DeviceCatalogItem> store = new HashMap<>();
+    private long idCounter = 1;
 
     @PostMapping
     public DeviceCatalogItem create(@RequestBody DeviceCatalogItem item) {
-        return service.createItem(item);
+        item.setId(idCounter++);
+        store.put(item.getId(), item);
+        return item;
     }
 
     @GetMapping
-    public List<DeviceCatalogItem> getAll() {
-        return service.getAllItems();
+    public Collection<DeviceCatalogItem> getAll() {
+        return store.values();
     }
 
-    @PutMapping("/{id}/status")
-    public DeviceCatalogItem updateStatus(
-            @PathVariable Long id,
-            @RequestParam boolean active) {
-        return service.updateActiveStatus(id, active);
+    @GetMapping("/{id}")
+    public DeviceCatalogItem getById(@PathVariable Long id) {
+        return store.get(id);
+    }
+
+    @PutMapping("/{id}")
+    public DeviceCatalogItem update(@PathVariable Long id, @RequestBody DeviceCatalogItem item) {
+        item.setId(id);
+        store.put(id, item);
+        return item;
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id) {
+        store.remove(id);
+        return "Deleted";
     }
 }

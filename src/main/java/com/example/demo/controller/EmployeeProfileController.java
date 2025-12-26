@@ -1,40 +1,44 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.EmployeeProfile;
-import com.example.demo.service.EmployeeProfileService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/employees")
 public class EmployeeProfileController {
 
-    private final EmployeeProfileService service;
-
-    public EmployeeProfileController(EmployeeProfileService service) {
-        this.service = service;
-    }
+    private final Map<Long, EmployeeProfile> store = new HashMap<>();
+    private long idCounter = 1;
 
     @PostMapping
     public EmployeeProfile create(@RequestBody EmployeeProfile emp) {
-        return service.createEmployee(emp);
+        emp.setId(idCounter++);
+        store.put(emp.getId(), emp);
+        return emp;
+    }
+
+    @GetMapping
+    public Collection<EmployeeProfile> getAll() {
+        return store.values();
     }
 
     @GetMapping("/{id}")
     public EmployeeProfile getById(@PathVariable Long id) {
-        return service.getEmployeeById(id);
+        return store.get(id);
     }
 
-    @GetMapping
-    public List<EmployeeProfile> getAll() {
-        return service.getAllEmployees();
+    @PutMapping("/{id}")
+    public EmployeeProfile update(@PathVariable Long id, @RequestBody EmployeeProfile emp) {
+        emp.setId(id);
+        store.put(id, emp);
+        return emp;
     }
 
-    @PutMapping("/{id}/status")
-    public EmployeeProfile updateStatus(
-            @PathVariable Long id,
-            @RequestParam boolean active) {
-        return service.updateEmployeeStatus(id, active);
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id) {
+        store.remove(id);
+        return "Deleted";
     }
 }

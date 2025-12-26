@@ -1,33 +1,26 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.PolicyRule;
-import com.example.demo.service.PolicyRuleService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/policies")
 public class PolicyRuleController {
 
-    private final PolicyRuleService service;
-
-    public PolicyRuleController(PolicyRuleService service) {
-        this.service = service;
-    }
+    private final Map<Long, PolicyRule> store = new HashMap<>();
+    private long idCounter = 1;
 
     @PostMapping
     public PolicyRule create(@RequestBody PolicyRule rule) {
-        return service.createRule(rule);
-    }
-
-    @GetMapping("/active")
-    public List<PolicyRule> getActiveRules() {
-        return service.getActiveRules();
+        rule.setId(idCounter++);
+        store.put(rule.getId(), rule);
+        return rule;
     }
 
     @GetMapping
-    public List<PolicyRule> getAllRules() {
-        return service.getAllRules();
+    public Collection<PolicyRule> getAll() {
+        return store.values();
     }
 }
