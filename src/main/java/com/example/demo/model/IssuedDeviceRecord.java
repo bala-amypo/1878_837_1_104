@@ -1,0 +1,51 @@
+package com.example.demo.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "issued_device_records")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class IssuedDeviceRecord {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    private EmployeeProfile employee;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "device_item_id", nullable = false)
+    private DeviceCatalogItem deviceItem;
+
+    @Column(nullable = false)
+    private LocalDate issuedDate;
+
+    @Column
+    private LocalDate returnedDate;
+
+    @Column(nullable = false)
+    private String status = "ISSUED"; // ISSUED / RETURNED
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.status == null || this.status.trim().isEmpty()) {
+            this.status = "ISSUED";
+        }
+    }
+
+    public IssuedDeviceRecord(EmployeeProfile employee, DeviceCatalogItem deviceItem, LocalDate issuedDate) {
+        this.employee = employee;
+        this.deviceItem = deviceItem;
+        this.issuedDate = issuedDate;
+        this.status = "ISSUED";
+    }
+}
