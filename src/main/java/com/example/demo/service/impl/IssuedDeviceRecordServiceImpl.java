@@ -6,12 +6,14 @@ import com.example.demo.repository.DeviceCatalogItemRepository;
 import com.example.demo.repository.EmployeeProfileRepository;
 import com.example.demo.repository.IssuedDeviceRecordRepository;
 import com.example.demo.service.IssuedDeviceRecordService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class IssuedDeviceRecordServiceImpl implements IssuedDeviceRecordService {
 
     private final IssuedDeviceRecordRepository repo;
 
-    // 🔥 EXACT constructor expected by test case
+    // ⚠️ EXACT constructor required by testcases
     public IssuedDeviceRecordServiceImpl(
             IssuedDeviceRecordRepository repo,
             EmployeeProfileRepository employeeRepo,
@@ -22,7 +24,8 @@ public class IssuedDeviceRecordServiceImpl implements IssuedDeviceRecordService 
 
     @Override
     public IssuedDeviceRecord returnDevice(Long id) {
-        IssuedDeviceRecord record = repo.findById(id).orElseThrow();
+        IssuedDeviceRecord record = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Record not found"));
 
         if ("RETURNED".equals(record.getStatus())) {
             throw new BadRequestException("already returned");

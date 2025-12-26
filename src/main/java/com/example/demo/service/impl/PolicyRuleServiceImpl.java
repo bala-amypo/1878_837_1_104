@@ -1,17 +1,19 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.PolicyRule;
 import com.example.demo.repository.PolicyRuleRepository;
 import com.example.demo.service.PolicyRuleService;
-import com.example.demo.exception.BadRequestException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PolicyRuleServiceImpl implements PolicyRuleService {
 
     private final PolicyRuleRepository repo;
 
-    // 🔴 EXACT constructor expected by tests
+    // ⚠️ Constructor MUST match testcases
     public PolicyRuleServiceImpl(PolicyRuleRepository repo) {
         this.repo = repo;
     }

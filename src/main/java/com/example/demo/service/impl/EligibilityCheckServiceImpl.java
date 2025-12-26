@@ -3,9 +3,11 @@ package com.example.demo.service.impl;
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
 import com.example.demo.service.EligibilityCheckService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class EligibilityCheckServiceImpl implements EligibilityCheckService {
 
     private final EmployeeProfileRepository empRepo;
@@ -15,27 +17,29 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
     private final EligibilityCheckRecordRepository eligibilityRepo;
 
     public EligibilityCheckServiceImpl(
-            EmployeeProfileRepository e,
-            DeviceCatalogItemRepository d,
-            IssuedDeviceRecordRepository i,
-            PolicyRuleRepository p,
-            EligibilityCheckRecordRepository el) {
-        this.empRepo = e;
-        this.devRepo = d;
-        this.issuedRepo = i;
-        this.policyRepo = p;
-        this.eligibilityRepo = el;
+            EmployeeProfileRepository empRepo,
+            DeviceCatalogItemRepository devRepo,
+            IssuedDeviceRecordRepository issuedRepo,
+            PolicyRuleRepository policyRepo,
+            EligibilityCheckRecordRepository eligibilityRepo) {
+
+        this.empRepo = empRepo;
+        this.devRepo = devRepo;
+        this.issuedRepo = issuedRepo;
+        this.policyRepo = policyRepo;
+        this.eligibilityRepo = eligibilityRepo;
     }
 
     @Override
-    public EligibilityCheckRecord validateEligibility(Long empId, Long devId) {
+    public EligibilityCheckRecord validateEligibility(Long empId, Long deviceId) {
+
         EligibilityCheckRecord rec = new EligibilityCheckRecord();
         rec.setEmployeeId(empId);
-        rec.setDeviceItemId(devId);
+        rec.setDeviceItemId(deviceId);
         rec.prePersist();
 
         var empOpt = empRepo.findById(empId);
-        var devOpt = devRepo.findById(devId);
+        var devOpt = devRepo.findById(deviceId);
 
         if (empOpt.isEmpty() || devOpt.isEmpty()) {
             rec.setIsEligible(false);
@@ -58,13 +62,15 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
             return eligibilityRepo.save(rec);
         }
 
-        if (!issuedRepo.findActiveByEmployeeAndDevice(empId, devId).isEmpty()) {
+        if (!issuedRepo.findActiveByEmployeeAndDevice(empId, deviceId).isEmpty()) {
             rec.setIsEligible(false);
             rec.setReason("Active issuance exists");
             return eligibilityRepo.save(rec);
         }
 
-        if (issuedRepo.countActiveDevicesForEmployee(empId) >= dev.getMaxAllowedPerEmployee()) {
+        if (issuedRepo.countActiveDevicesForEmployee(empId)
+                >= dev.getMaxAllowedPerEmployee()) {
+
             rec.setIsEligible(false);
             rec.setReason("Maximum allowed devices reached");
             return eligibilityRepo.save(rec);
@@ -76,8 +82,11 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
             boolean roleMatch = rule.getAppliesToRole() == null
                     || rule.getAppliesToRole().equals(emp.getJobRole());
 
-            if (deptMatch && roleMatch && rule.getMaxDevicesAllowed() != null
-                    && rule.getMaxDevicesAllowed() <= issuedRepo.countActiveDevicesForEmployee(empId)) {
+            if (deptMatch && roleMatch
+                    && rule.getMaxDevicesAllowed() != null
+                    && rule.getMaxDevicesAllowed()
+                    <= issuedRepo.countActiveDevicesForEmployee(empId)) {
+
                 rec.setIsEligible(false);
                 rec.setReason("Policy violation");
                 return eligibilityRepo.save(rec);
