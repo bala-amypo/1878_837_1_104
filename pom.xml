@@ -26,12 +26,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Security (required for JWT and security classes) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
         <!-- JJWT for JWT token handling (compatible with Spring Boot 3.3.4) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
