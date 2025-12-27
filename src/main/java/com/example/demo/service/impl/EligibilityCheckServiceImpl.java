@@ -16,7 +16,7 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
     private final PolicyRuleRepository policyRepo;
     private final EligibilityCheckRecordRepository eligibilityRepo;
 
-    // Rule: Constructor injection only [cite: 1, 6]
+    // Requirement: Constructor injection only 
     public EligibilityCheckServiceImpl(EmployeeProfileRepository employeeRepo,
                                        DeviceCatalogItemRepository deviceRepo,
                                        IssuedDeviceRecordRepository issuedRepo,
@@ -34,21 +34,21 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
         EligibilityCheckRecord record = new EligibilityCheckRecord();
         record.setEmployeeId(employeeId);
         record.setDeviceItemId(deviceItemId);
-        record.setIsEligible(false); // Default to false
+        record.setIsEligible(false);
 
-        // 1. Check Employee [cite: 6]
+        // 1. Employee Check 
         Optional<EmployeeProfile> empOpt = employeeRepo.findById(employeeId);
         if (empOpt.isEmpty()) {
-            record.setReason("Employee not found"); // Keyword for Priority 54 
+            record.setReason("Employee not found"); // Required keyword 
             return eligibilityRepo.save(record);
         }
         EmployeeProfile emp = empOpt.get();
         if (!emp.getActive()) {
-            record.setReason("Employee is not active"); // Keyword for Priority 55 
+            record.setReason("Employee is not active"); // Required keyword 
             return eligibilityRepo.save(record);
         }
 
-        // 2. Check Device [cite: 6]
+        // 2. Device Check 
         Optional<DeviceCatalogItem> devOpt = deviceRepo.findById(deviceItemId);
         if (devOpt.isEmpty()) {
             record.setReason("Device not found");
@@ -56,25 +56,25 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
         }
         DeviceCatalogItem dev = devOpt.get();
         if (!dev.getActive()) {
-            record.setReason("Device is inactive"); // Keyword for Priority 56 
+            record.setReason("Device is inactive"); // Required keyword 
             return eligibilityRepo.save(record);
         }
 
-        // 3. Check for Active Issuance (No duplicates) [cite: 6]
+        // 3. Duplicate Active Issuance Check 
         List<IssuedDeviceRecord> activeIssuances = issuedRepo.findActiveByEmployeeAndDevice(employeeId, deviceItemId);
         if (!activeIssuances.isEmpty()) {
-            record.setReason("Active issuance exists"); // Keyword for Priority 57 
+            record.setReason("Active issuance exists"); // Required keyword 
             return eligibilityRepo.save(record);
         }
 
-        // 4. Check Device Max Limit [cite: 6]
+        // 4. Device-Level Max Limit Check 
         long currentCount = issuedRepo.countActiveDevicesForEmployee(employeeId);
         if (currentCount >= dev.getMaxAllowedPerEmployee()) {
-            record.setReason("Maximum allowed devices reached"); // Keyword for Priority 58 
+            record.setReason("Maximum allowed devices reached"); // Required keyword 
             return eligibilityRepo.save(record);
         }
 
-        // 5. Check Policy Rules [cite: 6]
+        // 5. Policy Rule Validation 
         List<PolicyRule> activeRules = policyRepo.findByActiveTrue();
         for (PolicyRule rule : activeRules) {
             boolean matchesDept = rule.getAppliesToDepartment() == null || rule.getAppliesToDepartment().equals(emp.getDepartment());
@@ -82,13 +82,13 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
 
             if (matchesDept && matchesRole) {
                 if (currentCount >= rule.getMaxDevicesAllowed()) {
-                    record.setReason("Policy violation: Rule " + rule.getRuleCode()); // Keyword for Priority 59/60 
+                    record.setReason("Policy violation: " + rule.getRuleCode()); // Required keyword 
                     return eligibilityRepo.save(record);
                 }
             }
         }
 
-        // 6. Success [cite: 6]
+        // 6. Success 
         record.setIsEligible(true);
         record.setReason("Eligible for issuance");
         return eligibilityRepo.save(record);
@@ -96,6 +96,6 @@ public class EligibilityCheckServiceImpl implements EligibilityCheckService {
 
     @Override
     public List<EligibilityCheckRecord> getChecksByEmployee(Long employeeId) {
-        return eligibilityRepo.findByEmployeeId(employeeId); [cite: 4, 6]
+        return eligibilityRepo.findByEmployeeId(employeeId);
     }
 }
