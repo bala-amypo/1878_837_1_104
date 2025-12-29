@@ -1,26 +1,37 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.PolicyRule;
+import com.example.demo.service.PolicyRuleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/policies")
+@Tag(name = "Policy Controller", description = "CRUD operations for Issuance Policies")
 public class PolicyRuleController {
+    private final PolicyRuleService policyService;
 
-    private final Map<Long, PolicyRule> store = new HashMap<>();
-    private long id = 1;
+    public PolicyRuleController(PolicyRuleService policyService) {
+        this.policyService = policyService;
+    }
 
     @PostMapping
-    public PolicyRule create(@RequestBody PolicyRule p) {
-        p.setId(id++);
-        store.put(p.getId(), p);
-        return p;
+    public ResponseEntity<PolicyRule> createPolicy(@RequestBody PolicyRule rule) {
+        return new ResponseEntity<>(policyService.savePolicy(rule), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public Collection<PolicyRule> getAll() {
-        return store.values();
+    public ResponseEntity<List<PolicyRule>> getAllActivePolicies() {
+        return ResponseEntity.ok(policyService.getActivePolicies());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deactivatePolicy(@PathVariable Long id) {
+        policyService.deactivatePolicy(id);
+        return ResponseEntity.noContent().build();
     }
 }
