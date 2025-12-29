@@ -1,47 +1,39 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.DeviceCatalogItem;
-import com.example.demo.service.DeviceCatalogItemService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/devices")
-@Tag(name = "Device Controller", description = "CRUD operations for Device Catalog")
-public class DeviceCatalogItemController {
-    private final DeviceCatalogItemService deviceService;
+public class DeviceCatalogController {
 
-    public DeviceCatalogItemController(DeviceCatalogItemService deviceService) {
-        this.deviceService = deviceService;
-    }
+    private final Map<Long, DeviceCatalogItem> store = new HashMap<>();
+    private long id = 1;
 
     @PostMapping
-    public ResponseEntity<DeviceCatalogItem> createDevice(@RequestBody DeviceCatalogItem device) {
-        return new ResponseEntity<>(deviceService.saveDevice(device), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<DeviceCatalogItem> getDeviceById(@PathVariable Long id) {
-        return ResponseEntity.ok(deviceService.getDeviceById(id));
+    public DeviceCatalogItem create(@RequestBody DeviceCatalogItem d) {
+        d.setId(id++);
+        store.put(d.getId(), d);
+        return d;
     }
 
     @GetMapping
-    public ResponseEntity<List<DeviceCatalogItem>> getAllDevices() {
-        return ResponseEntity.ok(deviceService.getAllDevices());
+    public Collection<DeviceCatalogItem> getAll() {
+        return store.values();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DeviceCatalogItem> updateDevice(@PathVariable Long id, @RequestBody DeviceCatalogItem device) {
-        return ResponseEntity.ok(deviceService.updateDevice(id, device));
+    public DeviceCatalogItem update(@PathVariable Long id, @RequestBody DeviceCatalogItem d) {
+        d.setId(id);
+        store.put(id, d);
+        return d;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDevice(@PathVariable Long id) {
-        deviceService.deleteDevice(id);
-        return ResponseEntity.noContent().build();
+    public String delete(@PathVariable Long id) {
+        store.remove(id);
+        return "Deleted";
     }
 }
